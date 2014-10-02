@@ -1,7 +1,7 @@
 Split English and Japanese Sentence
 =========================================
 
-split with ''MeCab''.
+split with ``MeCab``.
 
 Requirements
 ------------
