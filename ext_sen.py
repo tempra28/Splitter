@@ -6,7 +6,7 @@ import parser
 
 def read_write_file(filename):
     f  = open(filename, 'r')
-    f2 = open("sen_" + filename, 'w')
+    f2 = open("es_" + filename, 'w')
     prog = re.compile("<s>.*</s>") # Match the Longest
     tag  = re.compile("<.*?>")
     for line in f:
