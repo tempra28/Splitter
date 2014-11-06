@@ -6,6 +6,7 @@ import optparse
 def parser_set():
     parser = optparse.OptionParser()
     parser.add_option("-f", dest = "filename", help = "read_filename")
+    parser.add_option("-a", dest = "a_filename", help = "answer_filename")
     return parser.parse_args()
 
 def main():
