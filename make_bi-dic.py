@@ -3,7 +3,10 @@
 
 # $ ./make_bi-dic.py -f dic_file 
 #  to make a bilingual dictionary; dic_file.json
-# { "NP": "cat", "猫" 
+
+#   1. postag付き辞書を作成                     make_dic(options)
+#   2. key: 単語, value: 名詞の辞書を作成       make_noun_dic(options)
+#   3. 索引単語(名詞)からなる翻訳単語辞書を作成 make_noun_trdic(options)
 
 import re, json, codecs, sys
 import parser
@@ -116,14 +119,42 @@ def make_noun_dic(options, lang = "e"):
             pass
     write_json(filename, noun_dic)
 
+def set_noun_trdic(options, lang):
+    if lang == "e":
+        return ["EN1", "EN2", "EN3", "EN4", "EN5"], options.tr_efilename
+               # 名詞, 固有名詞、基数詞、序数詞、助数詞(全て名詞区分)
+    elif lang == "j":
+        return ["JN1", "JN2", "JN3", "JN4", "JN7"], options.tr_jfilename
+               # 普通名詞, 固有名詞、数詞、時詞、形式名詞(全て名詞区分)        
+    else:
+        sys.stderr.write("!! No Language for the dictionary !!")
+        sys.exit(2)
+
+def make_noun_trdic(options, lang = "e"):
+    tr_dic = {} # 名詞だけからなる正解データを作成
+    noun_lst, tr_filename = set_noun_trdic(options, lang)
+    if   lang == "e":
+        dic = read_json(options.w_efilename)
+    elif lang == "j":
+        dic = read_json(options.w_jfilename)
+
+    for noun in noun_lst:
+        try:
+            n_dic = dic[noun]
+            tr_dic.update(n_dic)
+        except KeyError:
+            pass
+    write_json(tr_filename, tr_dic)
+
 def main():
     ## Option parameter setting
     (options, args) = parser.parser_set()
+    make_dic(options)
     make_dic(options, "j")
-    make_dic(options, "e")
+    make_noun_dic(options)
     make_noun_dic(options, "j")
-    make_noun_dic(options, "e")
-
+    make_noun_trdic(options)
+    make_noun_trdic(options, "j")
 
 if __name__ == "__main__":
     
