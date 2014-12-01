@@ -36,9 +36,17 @@ def get_fn(filename, a_lst):
             pass
     return num
 
+def get_tp(cand_tm, a_lst):
+    tp = 0.
+    if cand_tm[1] in a_lst:
+        print cand_tm[1]
+        tp += 1.
+        a_lst.remove(cand_tm[1]) # a_lst shrinks
+    return tp, a_lst
+
 def get_recall(options):
     rec_dic = {} # {term: recall}
-    tp, fn, count = 0. , 0., 0.
+    fn, count = 0. , 0.
 
     term_dic = read_json(options.filename)
     ans_dic  = read_json(options.a_filename)
@@ -48,11 +56,11 @@ def get_recall(options):
     for term, tm_lst in term_dic.iteritems():
         recall = 0.
         a_lst = set_ans(ans_dic[term])
+        print tm_lst, a_lst
         while tm_lst != []: # find it in a dic
             cand_tm = tm_lst.pop() # ans_term
-            if cand_tm[1] in a_lst:
-                tp += 1.
-                a_lst.remove(cand_tm[1]) # a_lst shrinks
+            tp, a_lst = get_tp(cand_tm, a_lst)
+        print tm_lst, a_lst
         fn = get_fn(options.c_filename, a_lst)
         # MEMO: 残された正解リストにある単語のうち、
         #       コーパスから作成した名詞辞書(corpus_noun_dic.json)の単語の数がfn
@@ -64,7 +72,7 @@ def get_recall(options):
         rec_dic[term] = recall # rec_dic = {term: recall} 追加
         count += recall
     write_json(options.r_filename, rec_dic)
-
+    print rec_dic
     avr_recall = count / len(rec_dic) # recall平均値
     print "** average recall: %f" % avr_recall
 
