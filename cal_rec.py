@@ -54,20 +54,23 @@ def get_recall(options):
     # recall    = tp / tp + fn
     for term, tm_lst in term_dic.iteritems():
         recall = 0.
-        a_lst = set_ans(ans_dic[term])
-        while tm_lst != []: # find it in a dic
-            cand_tm = tm_lst.pop() # ans_term
-            tp, a_lst = get_tp(cand_tm, a_lst)
-        fn = get_fn(options.c_filename, a_lst)
-        # MEMO: 残された正解リストにある単語のうち、
-        #       コーパスから作成した名詞辞書(corpus_noun_dic.json)の単語の数がfn
         try:
-            recall = tp / (tp + fn)
-        except ZeroDivisionError:
-            sys.stderr.write("!! Recall devided by Zero (%s) !! \n" % term)
-            recall = 0.
-        rec_dic[term] = recall # rec_dic = {term: recall} 追加
-        count += recall
+            a_lst = set_ans(ans_dic[term])
+            while tm_lst != []: # find it in a dic
+                cand_tm = tm_lst.pop() # ans_term
+                tp, a_lst = get_tp(cand_tm, a_lst)
+            fn = get_fn(options.c_filename, a_lst)
+            # MEMO: 残された正解リストにある単語のうち、
+            #       コーパスから作成した名詞辞書(corpus_noun_dic.json)の単語の数がfn
+            try:
+                recall = tp / (tp + fn)
+            except ZeroDivisionError:
+                sys.stderr.write("!! Recall devided by Zero (%s) !! \n" % term)
+                recall = 0.
+            rec_dic[term] = recall # rec_dic = {term: recall} 追加
+            count += recall
+        except KeyError:
+            pass
     write_json(options.r_filename, rec_dic)
     avr_recall = count / len(rec_dic) # recall平均値
     print "** average recall: %f" % avr_recall
